@@ -1,0 +1,7 @@
+uvicorn[standard]
+fastapi
+pydantic-settings
+SQLAlchemy==2.0.35
+psycopg[binary]==3.2.3
+alembic==1.13.2
+pytest==8.3.3
