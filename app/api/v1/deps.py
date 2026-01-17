@@ -25,7 +25,7 @@ Those dependencies run at the start of every relevant request to prepare the dat
 
 """
 
-from typing import Optional
+from typing import Optional, Generator
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
@@ -34,7 +34,7 @@ from app.db.session import SessionLocal
 from app.models.user import User
 
 
-def get_db(): # opens a sqlalchemy session
+def get_db() -> Generator[Session, None, None]: # opens a sqlalchemy session
     db = SessionLocal()
     try: 
         yield db
@@ -57,7 +57,7 @@ def get_token(request: Request) -> Optional[str]:
 # uses get_token to obtain the JWT
 def get_current_user(
     token: Optional[str] = Depends(get_token),
-    db: Session = Depends(SessionLocal),
+    db: Session = Depends(get_db),
 ) -> Optional[User]:
     if token is None:
         return None

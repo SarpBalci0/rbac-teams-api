@@ -1,0 +1,1 @@
+# shared types (common.py for Message, pagination minimal, etc.)
