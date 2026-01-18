@@ -1,85 +1,159 @@
 """
 Dependencies in this file assemble request-scoped objects.
 
-get_token:
-Extracts the raw JWT string from the Authorization header (Bearer <token>).
-Returns None if the header is missing or malformed.
-
-get_current_user:
-Uses get_token to obtain the JWT.
-Decodes the token to read the subject (user id).
-Queries the database for that user.
-Returns the User object if found, otherwise None.
-
-Relationship:
-Routes depend on get_current_user to obtain the authenticated user.
-Routes decide how to respond if the returned user is None (e.g., return 401).
-These dependencies do not raise HTTP errors or enforce business rules.
-
-
-HTTP request to the server by the client -> deps run -> result into a route func -> executes the route logic
-
-At every step of client request we need these functions to setup and send the returned values to route functions as arguments
-
-Those dependencies run at the start of every relevant request to prepare the database connection, authenticated user, and permission context before your route logic executes.
-
+Dependencies may raise HTTP errors to enforce authentication,
+resource existence, and authorization correctness.
 """
 
-from typing import Optional, Generator
-from fastapi import Depends, Request
+from typing import Generator, Optional
+
+from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token
+from app.core.permissions import role_allows
 from app.db.session import SessionLocal
+
 from app.models.user import User
+from app.models.team import Team
+from app.models.membership import Membership
 
 
-def get_db() -> Generator[Session, None, None]: # opens a sqlalchemy session
+def get_db() -> Generator[Session, None, None]:
+    """Open a SQLAlchemy session per request and close it afterwards."""
     db = SessionLocal()
-    try: 
+    try:
         yield db
     finally:
         db.close()
 
-# extract the raw JWT, returns none if missing
+
 def get_token(request: Request) -> Optional[str]:
-    auth = request.headers.get("Authorization") # get raw JWT
+    """
+    Extract the raw JWT string from the Authorization header: 'Bearer <token>'.
+    Returns None if missing or malformed.
+    """
+    auth = request.headers.get("Authorization")
     if not auth:
         return None
+
     parts = auth.split()
     if len(parts) != 2:
         return None
+
     scheme, token = parts
     if scheme.lower() != "bearer" or not token:
         return None
+
     return token
 
-# uses get_token to obtain the JWT
+
 def get_current_user(
     token: Optional[str] = Depends(get_token),
     db: Session = Depends(get_db),
-) -> Optional[User]:
+) -> User:
+    """
+    Return authenticated user or raise 401.
+    """
     if token is None:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+
     try:
         payload = decode_access_token(token)
     except Exception:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
     sub = payload.get("sub")
     if not sub:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
     try:
         user_id = int(sub)
     except (TypeError, ValueError):
-        return None
-    return db.query(User).filter(User.id == user_id).first()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+        )
+
+    return user
 
 
-#def get_team_by_id(): # reads the team ID from the URL path and queries the teams table
+def get_team_by_id(
+    team_id: int,
+    db: Session = Depends(get_db),
+) -> Team:
+    """
+    Load a Team by id, or raise 404 if it doesn't exist.
+    """
+    team = db.query(Team).filter(Team.id == team_id).first()
+    if not team:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Team not found",
+        )
+    return team
 
-#def get_current_membership(): # queries the team_memberships table using the current user and team
 
-#def require_permission(): # checks the role-permission map in memory
+def get_current_membership(
+    team: Team = Depends(get_team_by_id),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Membership:
+    """
+    Return the caller's membership for the given team,
+    or raise 403 if the user is not a member.
+    """
+    membership = (
+        db.query(Membership)
+        .filter(
+            Membership.team_id == team.id,
+            Membership.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not membership:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not a member of this team",
+        )
+
+    return membership
 
 
+def require_permission(action: str):
+    """
+    Dependency factory:
+    Ensures the current user's team role allows the given action.
+    """
 
+    def permission_dependency(
+        membership: Membership = Depends(get_current_membership),
+    ) -> Membership:
+        role = membership.role
+
+        if not role_allows(role, action):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+
+        return membership
+
+    return permission_dependency
