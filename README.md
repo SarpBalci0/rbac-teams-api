@@ -240,6 +240,3 @@ Tests cover:
 - Invitation-based membership
 - OpenAPI Authorization button
 
-## License
-
-MIT (for learning and portfolio use)
