@@ -1,5 +1,3 @@
-# app/core/permissions.py
-
 from __future__ import annotations
 
 from app.core.enums import Role
