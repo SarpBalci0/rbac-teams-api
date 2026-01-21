@@ -27,3 +27,10 @@ class UserPublic(BaseModel):
     id: int
     email: EmailStr
     created_at: datetime
+
+
+class UserMe(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: EmailStr
