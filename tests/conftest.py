@@ -1,3 +1,5 @@
+# Test fixtures for DB session, TestClient overrides, and helpers for auth/team operations.
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -12,27 +14,14 @@ from app.models.team import Team
 from app.models.membership import Membership
 
 
-# ---------- Create Tables Before Tests ----------
-
 @pytest.fixture(scope="session", autouse=True)
 def setup_database():
-    """
-    Create all database tables before running tests.
-    This runs once per test session.
-    """
     Base.metadata.create_all(bind=engine)
     yield
-    # Optional: drop tables after all tests (commented out to preserve data)
-    # Base.metadata.drop_all(bind=engine)
 
-
-# ---------- Database Session Fixture ----------
 
 @pytest.fixture
 def db_session() -> Session:
-    """
-    Creates a database session for tests.
-    """
     db = SessionLocal()
     try:
         yield db
@@ -40,15 +29,8 @@ def db_session() -> Session:
         db.close()
 
 
-# ---------- Dependency Override ----------
-
 @pytest.fixture
 def client(db_session: Session):
-    """
-    Provides TestClient with overridden get_db dependency
-    so API uses the test database session.
-    """
-
     def override_get_db():
         try:
             yield db_session
@@ -63,24 +45,15 @@ def client(db_session: Session):
     app.dependency_overrides.clear()
 
 
-# ---------- Automatic Database Cleanup ----------
-
 @pytest.fixture(autouse=True)
 def clean_database(db_session: Session):
-    """
-    Ensures each test runs with a clean database.
-    """
-    # Run test
     yield
 
-    # Cleanup after test (order matters due to foreign keys)
     db_session.query(Membership).delete()
     db_session.query(Team).delete()
     db_session.query(User).delete()
     db_session.commit()
 
-
-# ---------- Helper Functions ----------
 
 @pytest.fixture
 def register_user(client):

@@ -1,13 +1,4 @@
-"""
-routes --> HTTP handlers that:
-    1 - declare the endpoint path and method
-    2 - accept validated schema inputs
-    3 - call the appropriate service-layer function
-    4 - return schema-formatted responses
-
-Routers should not directly implement RBAC logic.
-RBAC is enforced via dependencies in app/api/v1/deps.py.
-"""
+#  HTTP endpoints for creating teams, getting a team, listing members, and adding members (RBAC via dependencies).
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session

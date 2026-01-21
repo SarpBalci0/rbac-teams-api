@@ -1,17 +1,11 @@
-"""create teams and team_memberships tables
+# Migration creating teams and team_memberships tables.
 
-Revision ID: bbe7a32e5d11
-Revises: 707ea801f567
-Create Date: 2026-01-13 00:44:05.543887
-
-"""
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
 
 
-# revision identifiers, used by Alembic.
 revision: str = 'bbe7a32e5d11'
 down_revision: Union[str, None] = '707ea801f567'
 branch_labels: Union[str, Sequence[str], None] = None
@@ -19,7 +13,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Create teams table
     op.create_table('teams',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=128), nullable=False),
@@ -28,7 +21,6 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_teams_name'), 'teams', ['name'], unique=False)
     
-    # Create team_memberships table with COMPOSITE PRIMARY KEY
     op.create_table('team_memberships',
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('team_id', sa.Integer(), nullable=False),

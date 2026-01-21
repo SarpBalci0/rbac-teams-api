@@ -1,9 +1,4 @@
-"""
-Dependencies in this file assemble request-scoped objects.
-
-Dependencies may raise HTTP errors to enforce authentication,
-resource existence, and authorization correctness.
-"""
+# Request-scoped dependencies for DB session, auth (JWT), team lookup, membership lookup, and permission enforcement.
 
 from typing import Generator, Optional
 
@@ -20,7 +15,6 @@ from app.models.membership import Membership
 
 
 def get_db() -> Generator[Session, None, None]:
-    """Open a SQLAlchemy session per request and close it afterwards."""
     db = SessionLocal()
     try:
         yield db
@@ -29,10 +23,6 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def get_token(request: Request) -> Optional[str]:
-    """
-    Extract the raw JWT string from the Authorization header: 'Bearer <token>'.
-    Returns None if missing or malformed.
-    """
     auth = request.headers.get("Authorization")
     if not auth:
         return None
@@ -52,9 +42,6 @@ def get_current_user(
     token: Optional[str] = Depends(get_token),
     db: Session = Depends(get_db),
 ) -> User:
-    """
-    Return authenticated user or raise 401.
-    """
     if token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -98,9 +85,6 @@ def get_team_by_id(
     team_id: int,
     db: Session = Depends(get_db),
 ) -> Team:
-    """
-    Load a Team by id, or raise 404 if it doesn't exist.
-    """
     team = db.query(Team).filter(Team.id == team_id).first()
     if not team:
         raise HTTPException(
@@ -115,10 +99,6 @@ def get_current_membership(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Membership:
-    """
-    Return the caller's membership for the given team,
-    or raise 403 if the user is not a member.
-    """
     membership = (
         db.query(Membership)
         .filter(
@@ -138,11 +118,6 @@ def get_current_membership(
 
 
 def require_permission(action: str):
-    """
-    Dependency factory:
-    Ensures the current user's team role allows the given action.
-    """
-
     def permission_dependency(
         membership: Membership = Depends(get_current_membership),
     ) -> Membership:

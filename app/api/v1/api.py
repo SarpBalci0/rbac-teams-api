@@ -1,3 +1,5 @@
+# Aggregates and mounts all v1 routers.
+
 from fastapi import APIRouter
 
 from app.api.v1.routes.teams import router as teams_router

@@ -1,3 +1,5 @@
+# Boots the FastAPI app, sets logging, health endpoint, routers, and OpenAPI schema with Swagger auth.
+
 import logging
 
 from fastapi import FastAPI
@@ -19,10 +21,6 @@ app = FastAPI(
 
 
 def custom_openapi():
-    """
-    Add a Bearer JWT security scheme so Swagger UI shows the "Authorize" button.
-    This does not force auth globally; it only improves documentation UX.
-    """
     if app.openapi_schema:
         return app.openapi_schema
 

@@ -1,15 +1,15 @@
+# Permission constants and role-to-permission mapping with helper role_allows.
+
 from __future__ import annotations
 
 from app.core.enums import Role
 
-# ---- Actions (permission names) ----
 TEAM_READ = "team:read"
 TEAM_MEMBER_LIST = "team:member:list"
 TEAM_MEMBER_ADD = "team:member:add"
 TEAM_MEMBER_REMOVE = "team:member:remove"
 TEAM_MEMBER_CHANGE_ROLE = "team:member:change_role"
 
-# ---- Role -> allowed actions ----
 ROLE_PERMISSIONS: dict[Role, set[str]] = {
     Role.viewer: {
         TEAM_READ,
@@ -29,8 +29,4 @@ ROLE_PERMISSIONS: dict[Role, set[str]] = {
 }
 
 def role_allows(role: Role, action: str) -> bool:
-    """
-    Returns True if the given role is allowed to perform the action.
-    Unknown roles default to False.
-    """
     return action in ROLE_PERMISSIONS.get(role, set())

@@ -1,3 +1,5 @@
+# Alembic configuration/entrypoint for running migrations.
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
@@ -5,7 +7,7 @@ from alembic import context
 
 from app.core.config import settings
 from app.db.base import Base
-from app.db import models  # noqa: F401  (ensures models are imported)
+from app.db import models  
 
 config = context.config
 
@@ -16,7 +18,6 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode (no DB connection)."""
     url = settings.DATABASE_URL
     context.configure(
         url=url,
@@ -31,7 +32,6 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode (with DB connection)."""
     configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = settings.DATABASE_URL
 

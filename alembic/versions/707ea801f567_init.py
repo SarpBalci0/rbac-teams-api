@@ -1,17 +1,11 @@
-"""init
+# Migration creating the users table (id, email, hashed_password, created_at).
 
-Revision ID: 707ea801f567
-Revises: 
-Create Date: 2026-01-07 17:32:34.322113
-
-"""
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
 
 
-# revision identifiers, used by Alembic.
 revision: str = '707ea801f567'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None

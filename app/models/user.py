@@ -1,3 +1,5 @@
+# User ORM model with id, email, hashed_password, timestamps.
+
 from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, String, func

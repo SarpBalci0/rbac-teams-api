@@ -1,3 +1,5 @@
+# Pydantic settings loader for environment/config values (DB URL, JWT settings).
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

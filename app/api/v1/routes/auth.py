@@ -1,10 +1,4 @@
-# HTTP adapter for your auth service
-
-# call auth_service
-
-# translate service outcomes into http status codes
-
-# return response schemas
+# HTTP endpoints for register and login, mapping service outcomes to HTTP responses.
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -41,5 +35,3 @@ def login(payload: Login, db: Session = Depends(get_db)):
 
     token = auth_service.issue_access_token(user)
     return TokenResponse(access_token=token)
-
-

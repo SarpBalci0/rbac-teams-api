@@ -1,3 +1,5 @@
+# Team ORM model with id, name, timestamps.
+
 from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, String, func

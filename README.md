@@ -26,7 +26,6 @@ A minimal Role-Based Access Control (RBAC) backend built with FastAPI and Postgr
 app/
  ├── main.py                # FastAPI app entrypoint
  ├── api/v1/
- │   ├── api.py             # Aggregates all v1 routers
  │   ├── routes/
  │   │   ├── auth.py        # Auth endpoints
  │   │   └── teams.py       # Team & membership endpoints
@@ -34,22 +33,24 @@ app/
  ├── services/
  │   ├── auth_service.py    # Registration, login, token issuance
  │   └── team_service.py    # Team & membership business logic
- ├── models/
- │   ├── user.py            # User model
- │   ├── team.py            # Team model
- │   └── membership.py      # Team membership + role
+ ├── models/               # SQLAlchemy models
  ├── schemas/
  │   ├── auth.py            # Auth request/response schemas
- │   └── team.py            # Team request/response schemas
+ │   ├── team.py            # Team request/response schemas
+ │   └── user.py            # User schemas
  ├── core/
- │   ├── security.py        # Password hashing & JWT helpers
+ │   ├── config.py          # App configuration
+ │   ├── enums.py           # Role enum
+ │   ├── log_config.py      # Logging configuration
  │   ├── permissions.py     # Role → action permission map
- │   └── enums.py           # Role enum
+ │   └── security.py        # Password hashing & JWT helpers
  └── db/
+     ├── base.py            # Base model
      └── session.py         # Database session factory
 alembic/
  └── versions/              # Database migrations
 tests/
+ ├── conftest.py
  ├── test_auth.py
  └── test_teams_rbac.py
 ```
