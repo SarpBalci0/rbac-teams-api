@@ -3,6 +3,7 @@
 import logging
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.api.v1.api import api_router
@@ -17,6 +18,14 @@ logger.info(f"ENV = {settings.APP_ENV}")
 app = FastAPI(
     title="fastapi-postgres-template",
     swagger_ui_parameters={"persistAuthorization": True},
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 

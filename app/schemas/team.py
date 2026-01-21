@@ -28,6 +28,7 @@ class TeamMemberPublic(BaseModel): # user for output
     model_config = ConfigDict(from_attributes=True)
   
     user_id: int
+    email: EmailStr
     role: Role
     joined_at: datetime
 

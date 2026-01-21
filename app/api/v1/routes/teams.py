@@ -31,6 +31,15 @@ from app.services import team_service as team_service
 router = APIRouter(prefix="/teams", tags=["teams"])
 
 
+@router.get("", response_model=list[TeamPublic])
+def list_teams(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    teams = team_service.list_teams_for_user(db=db, user=current_user)
+    return teams
+
+
 @router.post("", response_model=TeamPublic, status_code=status.HTTP_201_CREATED)
 def create_team(
     payload: TeamCreate,
