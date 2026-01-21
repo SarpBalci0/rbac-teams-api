@@ -99,10 +99,6 @@ def remove_member(
     db: Session = Depends(get_db),
     _: Membership = Depends(require_permission(TEAM_MEMBER_REMOVE)),
 ):
-    """
-    Remove a user from the team.
-    Only admins are allowed to call this endpoint.
-    """
     removed = team_service.remove_member(db=db, team_id=team_id, user_id=user_id)
     if not removed:
         raise HTTPException(
@@ -122,10 +118,6 @@ def change_member_role(
     db: Session = Depends(get_db),
     _: Membership = Depends(require_permission(TEAM_MEMBER_CHANGE_ROLE)),
 ):
-    """
-    Change the role for an existing team member.
-    Only admins are allowed to call this endpoint.
-    """
     membership = team_service.change_member_role(
         db=db,
         team_id=team_id,
