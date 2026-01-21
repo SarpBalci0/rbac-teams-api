@@ -136,6 +136,12 @@ celerybeat.pid
 
 # Environments
 .env
+!frontend/.env
+
+# Node / Vite
+node_modules/
+frontend/dist/
+frontend/.vite/
 .envrc
 .venv
 env/
