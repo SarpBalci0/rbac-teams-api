@@ -115,6 +115,8 @@ Roles are per team, not global.
 - `TEAM_READ`
 - `TEAM_MEMBER_LIST`
 - `TEAM_MEMBER_ADD`
+- `TEAM_MEMBER_REMOVE`
+- `TEAM_MEMBER_CHANGE_ROLE`
 
 **Role → allowed actions mapping:**
 - `admin` → all actions
@@ -154,6 +156,8 @@ This loads:
 | GET | `/api/v1/teams/{team_id}` | Get team | `TEAM_READ` |
 | POST | `/api/v1/teams/{team_id}/members` | Add member | `TEAM_MEMBER_ADD` |
 | GET | `/api/v1/teams/{team_id}/members` | List members | `TEAM_MEMBER_LIST` |
+| DELETE | `/api/v1/teams/{team_id}/members/{user_id}` | Remove member | `TEAM_MEMBER_REMOVE` |
+| PATCH | `/api/v1/teams/{team_id}/members/{user_id}` | Change member role | `TEAM_MEMBER_CHANGE_ROLE` |
 
 ### Status Code Behavior
 

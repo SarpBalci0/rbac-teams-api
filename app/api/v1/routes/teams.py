@@ -9,7 +9,13 @@ from app.api.v1.deps import (
     get_team_by_id,
     require_permission,
 )
-from app.core.permissions import TEAM_READ, TEAM_MEMBER_ADD, TEAM_MEMBER_LIST
+from app.core.permissions import (
+    TEAM_READ,
+    TEAM_MEMBER_ADD,
+    TEAM_MEMBER_CHANGE_ROLE,
+    TEAM_MEMBER_LIST,
+    TEAM_MEMBER_REMOVE,
+)
 from app.models.membership import Membership
 from app.models.team import Team
 from app.models.user import User
@@ -18,6 +24,7 @@ from app.schemas.team import (
     TeamPublic,
     TeamMemberAdd,
     TeamMemberPublic,
+    TeamMemberRoleUpdate,
 )
 from app.services import team_service as team_service
 
@@ -77,6 +84,58 @@ def add_member(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
+        )
+
+    return membership
+
+
+@router.delete(
+    "/{team_id}/members/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def remove_member(
+    team_id: int,
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: Membership = Depends(require_permission(TEAM_MEMBER_REMOVE)),
+):
+    """
+    Remove a user from the team.
+    Only admins are allowed to call this endpoint.
+    """
+    removed = team_service.remove_member(db=db, team_id=team_id, user_id=user_id)
+    if not removed:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Membership not found",
+        )
+
+
+@router.patch(
+    "/{team_id}/members/{user_id}",
+    response_model=TeamMemberPublic,
+)
+def change_member_role(
+    team_id: int,
+    user_id: int,
+    payload: TeamMemberRoleUpdate,
+    db: Session = Depends(get_db),
+    _: Membership = Depends(require_permission(TEAM_MEMBER_CHANGE_ROLE)),
+):
+    """
+    Change the role for an existing team member.
+    Only admins are allowed to call this endpoint.
+    """
+    membership = team_service.change_member_role(
+        db=db,
+        team_id=team_id,
+        user_id=user_id,
+        new_role=payload.role,
+    )
+    if membership is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Membership not found",
         )
 
     return membership
