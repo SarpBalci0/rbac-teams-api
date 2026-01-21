@@ -6,6 +6,8 @@ from app.core.enums import Role
 TEAM_READ = "team:read"
 TEAM_MEMBER_LIST = "team:member:list"
 TEAM_MEMBER_ADD = "team:member:add"
+TEAM_MEMBER_REMOVE = "team:member:remove"
+TEAM_MEMBER_CHANGE_ROLE = "team:member:change_role"
 
 # ---- Role -> allowed actions ----
 ROLE_PERMISSIONS: dict[Role, set[str]] = {
@@ -21,6 +23,8 @@ ROLE_PERMISSIONS: dict[Role, set[str]] = {
         TEAM_READ,
         TEAM_MEMBER_LIST,
         TEAM_MEMBER_ADD,
+        TEAM_MEMBER_REMOVE,
+        TEAM_MEMBER_CHANGE_ROLE,
     },
 }
 

@@ -65,3 +65,51 @@ def list_members(db: Session, team_id: int) -> list[Membership]:
         .order_by(Membership.joined_at.asc())
         .all()
     )
+
+
+def remove_member(db: Session, team_id: int, user_id: int) -> bool:
+    """
+    Remove a membership for the given user and team.
+    Returns True if a membership was deleted, False if none existed.
+    """
+    membership = (
+        db.query(Membership)
+        .filter(
+            Membership.team_id == team_id,
+            Membership.user_id == user_id,
+        )
+        .first()
+    )
+    if membership is None:
+        return False
+
+    db.delete(membership)
+    db.commit()
+    return True
+
+
+def change_member_role(
+    db: Session,
+    team_id: int,
+    user_id: int,
+    new_role: Role,
+) -> Membership | None:
+    """
+    Change the role for an existing membership.
+    Returns the updated Membership, or None if not found.
+    """
+    membership = (
+        db.query(Membership)
+        .filter(
+            Membership.team_id == team_id,
+            Membership.user_id == user_id,
+        )
+        .first()
+    )
+    if membership is None:
+        return None
+
+    membership.role = new_role
+    db.commit()
+    db.refresh(membership)
+    return membership

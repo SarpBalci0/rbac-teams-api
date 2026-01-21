@@ -38,3 +38,9 @@ class TeamMemberPublic(BaseModel): # user for output
     user_id: int
     role: Role
     joined_at: datetime
+
+
+class TeamMemberRoleUpdate(BaseModel):
+    """Used to change an existing member's role."""
+
+    role: Role
