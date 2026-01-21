@@ -199,7 +199,14 @@ http://127.0.0.1:8000/docs
 ## Running Tests
 
 ```bash
-pytest
+docker-compose up -d
+docker-compose exec api alembic upgrade head
+docker-compose exec api pytest
+#
+# or using the Makefile:
+# make up
+# make migrate
+# make test
 ```
 
 Tests cover:
@@ -238,5 +245,5 @@ Tests cover:
 - Team deletion
 - Role updates
 - Invitation-based membership
-- OpenAPI Authorization button
+ - CI/CD enhancements (linting, coverage thresholds, etc.)
 
