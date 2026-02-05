@@ -1,4 +1,4 @@
-# Pydantic schemas for user create/public DTOs.
+
 
 from datetime import datetime
 

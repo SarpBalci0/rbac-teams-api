@@ -1,4 +1,4 @@
-# Team membership ORM model with composite PK (user_id, team_id), role, joined_at.
+
 
 from datetime import datetime
 

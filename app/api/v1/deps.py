@@ -1,4 +1,4 @@
-# Request-scoped dependencies for DB session, auth (JWT), team lookup, membership lookup, and permission enforcement.
+
 
 from typing import Generator, Optional
 

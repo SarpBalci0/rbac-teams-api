@@ -1,4 +1,4 @@
-# Business logic for creating teams, adding members, and listing memberships.
+# Business logic for creating teams, adding members, and listing memberships.
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -64,6 +64,34 @@ def add_member(db: Session, team_id: int, payload: TeamMemberAdd) -> Membership 
     return membership
 
 
+def add_member_with_email(db: Session, team_id: int, payload: TeamMemberAdd) -> dict | None:
+    email = payload.email.strip().lower()
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        return None
+
+    membership = Membership(
+        user_id=user.id,
+        team_id=team_id,
+        role=payload.role,
+    )
+    db.add(membership)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("already_member")
+
+    db.refresh(membership)
+    return {
+        "user_id": membership.user_id,
+        "email": user.email,
+        "role": membership.role,
+        "joined_at": membership.joined_at,
+    }
+
+
 def list_members(db: Session, team_id: int) -> list[Membership]:
     return (
         db.query(Membership)
@@ -71,6 +99,30 @@ def list_members(db: Session, team_id: int) -> list[Membership]:
         .order_by(Membership.joined_at.asc())
         .all()
     )
+
+
+def list_members_with_email(db: Session, team_id: int) -> list[dict]:
+    rows = (
+        db.query(
+            Membership.user_id,
+            User.email,
+            Membership.role,
+            Membership.joined_at,
+        )
+        .join(User, User.id == Membership.user_id)
+        .filter(Membership.team_id == team_id)
+        .order_by(Membership.joined_at.asc(), Membership.user_id.asc())
+        .all()
+    )
+    return [
+        {
+            "user_id": row.user_id,
+            "email": row.email,
+            "role": row.role,
+            "joined_at": row.joined_at,
+        }
+        for row in rows
+    ]
 
 
 def remove_member(db: Session, team_id: int, user_id: int) -> bool:

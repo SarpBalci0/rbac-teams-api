@@ -1,4 +1,4 @@
-# Tests for registration and login behaviors.
+
 
 def test_register_success(client, register_user):
     res = register_user("user1@example.com", "password123")

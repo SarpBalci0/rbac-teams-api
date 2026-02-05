@@ -1,4 +1,4 @@
-# Alembic configuration/entrypoint for running migrations.
+# Alembic configuration/entrypoint for running migrations.
 
 from logging.config import fileConfig
 
@@ -7,7 +7,8 @@ from alembic import context
 
 from app.core.config import settings
 from app.db.base import Base
-from app.db import models  
+# Ensure model modules are imported so SQLAlchemy's metadata is populated.
+import app.models  # noqa: F401
 
 config = context.config
 

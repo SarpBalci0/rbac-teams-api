@@ -1,4 +1,3 @@
-# Defines Postgres and API services for local/dev.
 
 services:
   db:

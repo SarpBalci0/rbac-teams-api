@@ -1,4 +1,4 @@
-# HTTP endpoints for register and login, mapping service outcomes to HTTP responses.
+
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session

@@ -1,4 +1,4 @@
-# Password hashing/verification and JWT creation/decoding utilities.
+
 
 import bcrypt 
 from datetime import datetime, timedelta, timezone
@@ -22,7 +22,7 @@ def verify_password(password: str, hashed_password: bytes) -> bool:
 
 def create_access_token(subject: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
-    # payload is the decoded data section of the token that contains claims like user ID, email, expiration.
+
     payload = {"sub": subject, "exp": expire} 
     access_token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return access_token

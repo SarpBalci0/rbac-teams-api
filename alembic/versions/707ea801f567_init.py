@@ -1,4 +1,4 @@
-# Migration creating the users table (id, email, hashed_password, created_at).
+
 
 from typing import Sequence, Union
 

@@ -1,4 +1,4 @@
-# Migration creating teams and team_memberships tables.
+
 
 from typing import Sequence, Union
 
@@ -28,7 +28,7 @@ def upgrade() -> None:
         sa.Column('joined_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['team_id'], ['teams.id'], ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('user_id', 'team_id')  # <-- COMPOSITE PRIMARY KEY
+        sa.PrimaryKeyConstraint('user_id', 'team_id')
     )
 
 

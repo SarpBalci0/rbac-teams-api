@@ -1,4 +1,4 @@
-#  HTTP endpoints for creating teams, getting a team, listing members, and adding members (RBAC via dependencies).
+#  HTTP endpoints for creating teams, getting a team, listing members, and adding members (RBAC via dependencies).
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -24,6 +24,7 @@ from app.schemas.team import (
     TeamPublic,
     TeamMemberAdd,
     TeamMemberPublic,
+    TeamMemberWithEmailPublic,
     TeamMemberRoleUpdate,
 )
 from app.services import team_service as team_service
@@ -58,19 +59,19 @@ def get_team(
     return team
 
 
-@router.get("/{team_id}/members", response_model=list[TeamMemberPublic])
+@router.get("/{team_id}/members", response_model=list[TeamMemberWithEmailPublic])
 def list_members(
     team_id: int,
     db: Session = Depends(get_db),
     _: Membership = Depends(require_permission(TEAM_MEMBER_LIST)),
 ):
-    members = team_service.list_members(db=db, team_id=team_id)
+    members = team_service.list_members_with_email(db=db, team_id=team_id)
     return members
 
 
 @router.post(
     "/{team_id}/members",
-    response_model=TeamMemberPublic,
+    response_model=TeamMemberWithEmailPublic,
     status_code=status.HTTP_201_CREATED,
 )
 def add_member(
@@ -80,7 +81,9 @@ def add_member(
     _: Membership = Depends(require_permission(TEAM_MEMBER_ADD)),
 ):
     try:
-        membership = team_service.add_member(db=db, team_id=team_id, payload=payload)
+        membership = team_service.add_member_with_email(
+            db=db, team_id=team_id, payload=payload
+        )
     except ValueError as e:
         if str(e) == "already_member":
             raise HTTPException(

@@ -1,4 +1,4 @@
-# Pydantic schemas for register/login requests and token responses.
+
 
 from datetime import datetime
 from typing import Literal

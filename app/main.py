@@ -1,4 +1,4 @@
-# Boots the FastAPI app, sets logging, health endpoint, routers, and OpenAPI schema with Swagger auth.
+
 
 import logging
 

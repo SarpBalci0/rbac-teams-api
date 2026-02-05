@@ -1,4 +1,4 @@
-# Tests for RBAC on team creation, membership, and access rules.
+# Tests for RBAC on team creation, membership, and access rules.
 
 def test_create_team_requires_auth(client):
     res = client.post("/api/v1/teams", json={"name": "NoAuth Team"})
@@ -30,6 +30,7 @@ def test_team_creator_is_admin_and_can_read_and_list_members(
     assert isinstance(members, list)
     assert len(members) == 1
     assert members[0]["role"] == "admin"
+    assert members[0]["email"] == "admin@example.com"
 
 
 def test_admin_can_add_member_and_duplicate_returns_409(
@@ -53,6 +54,7 @@ def test_admin_can_add_member_and_duplicate_returns_409(
     assert add_res.status_code == 201
     added = add_res.json()
     assert added["role"] == "viewer"
+    assert added["email"] == "viewer@example.com"
 
     dup_res = client.post(
         f"/api/v1/teams/{team_id}/members",

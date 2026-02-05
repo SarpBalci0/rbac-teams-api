@@ -1,4 +1,4 @@
-# Permission constants and role-to-permission mapping with helper role_allows.
+
 
 from __future__ import annotations
 

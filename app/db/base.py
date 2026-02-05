@@ -1,4 +1,4 @@
-# SQLAlchemy declarative base definition.
+
 
 from sqlalchemy.orm import DeclarativeBase
 

@@ -1,4 +1,4 @@
-# Test fixtures for DB session, TestClient overrides, and helpers for auth/team operations.
+
 
 import pytest
 from fastapi.testclient import TestClient

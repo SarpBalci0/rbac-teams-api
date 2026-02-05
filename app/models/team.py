@@ -1,4 +1,4 @@
-# Team ORM model with id, name, timestamps.
+
 
 from datetime import datetime
 

@@ -1,4 +1,4 @@
-# Aggregates and mounts all v1 routers.
+
 
 from fastapi import APIRouter
 
