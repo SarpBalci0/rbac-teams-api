@@ -34,6 +34,18 @@ npm install
 npm run dev
 ```
 
+## Repo hygiene
+- **Do not commit `node_modules/`** (it is machine-specific, huge, and makes diffs unusable).
+- **Lockfiles stay committed**: `frontend/package-lock.json` must remain tracked to keep installs reproducible.
+- Install / build the frontend like this:
+```bash
+cd frontend
+npm ci        # preferred in CI and when package-lock.json is present
+# or: npm install
+npm run dev
+npm run build
+```
+
 ### 4) Open
 - API docs: `http://127.0.0.1:8000/docs`
 - App: `http://localhost:5173`

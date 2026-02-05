@@ -122,3 +122,33 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ----------------------------
+# Frontend (Vite/React) hygiene
+# ----------------------------
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/dist/
+**/build/
+
+# Vite caches
+**/.vite/
+**/.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local env files (keep examples tracked)
+**/.env
+**/.env.*
+!**/.env.example
+
+# OS / editor cruft
+.DS_Store
